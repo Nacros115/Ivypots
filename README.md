@@ -8,7 +8,8 @@ Ivypots is a solution for peoples who want to grow indoors vegetables, without w
 
  
 
- 
+ ![image](https://user-images.githubusercontent.com/78697892/199302636-1a3d459b-a7c7-4d45-bd9b-2e25fbbac043.png)
+
 
 To use the WizFi360 Arduino library, the development environment must be configured to use the Arduino platform.
 
