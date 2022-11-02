@@ -129,7 +129,7 @@ void setup() {
   // Initialisation du DHT22
   // ----------------------------------------------------------------------------
   
-}
+
    
   ////Relay//// 
   pinMode(RELAY_PIN, OUTPUT);  
@@ -168,8 +168,8 @@ void setup() {
       
   }
   Serial.println(F("AHT10 OK"));
-}
 
+}
 
 // =================
 // Main loop
