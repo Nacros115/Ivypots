@@ -1,3 +1,6 @@
+ 
+
+
 /*
           _____                    _____                _____                    _____                   _______               _____                    _____
          /\    \                  /\    \              |\    \                  /\    \                 /::\    \             /\    \                  /\    \
@@ -20,9 +23,7 @@
        \:::\____\                                                                                       \::/____/                                    \::::/    /
         \::/    /                                                                                        ~~                                           \::/    /
          \/____/                                                                                                                                       \/____/
-
-
-  File :       Ivypots.ino
+  Fichier :       Ivypots.ino
   
   Description :   This program allows you to control your plants and create water from a Peltier module 
   but also to measure temperature and hygrometry with a DHT11, 
@@ -30,27 +31,10 @@
   
  Please note that some elements are missing like the NFC for the app, and the link between the app and the pots it's because this project is still under development.
  
-  Author : Nayel Khouatra
-  Created on : 28.10.2022
-
+  Auteur :        Nayel Khouatra
+  Créé le :       28.10.2022
 */
 
-#include <SD.h>
- 
-
-// Variables used for the SD card
-// The SD card reader will be connected to pin 10 for the CS (chip select), 11/12/13 for the MOSI/MISO/SCK of the SPI bus
-const char* nomDuFichier = "donnees.csv";     // Format 8.3 (i.e. 8 letters maximum for the name, and optionally 3 for the extension)
-File monFichier;
-
- 
- 
-
-// Other variables
-const long delaiIntervalleDeMesures = 2000;             // Measurement/recording interval (expressed in milliseconds)
-                                                        // Note: do not go below 2 seconds, because the DHT22 cannot go that fast
-
- 
 
 ////Led RGB BOOT////
 int redpin = 2; 
@@ -90,47 +74,12 @@ int LDRvalue = 0;
  
 
 /////Relay/////
-int RELAY_PIN = 4;
+#define RELAY_PIN 4
  
-// ========================
-// Initialisation programme
-// ========================
 
 
 void setup() {
   Serial.begin(115200);
-  while(not Serial) delay(10);
-  SPI1.setRX(12);
-  SPI1.setCS(13);
-  SPI1.setSCK(10);
-  SPI1.setTX(11);
-  Serial.println(F("DATALOGGER program (t°/hygro recording from an AHT10 and a moist and luminosity sensor, and storage of data on SD card"));
-  Serial.println(F("==================================================================================================="));
-  Serial.println();
-
-  // ----------------------------------------------------------------------------
-  // Check: is the SD card accessible from the arduino?
-  // ----------------------------------------------------------------------------
-  Serial.print(F("Initialisation de la carte SD..."));
-  if (!SD.begin(13, SPI1)) {
-    Serial.println();
-    Serial.println();
-    Serial.println(F("SD card reader initialization failed. Check:"));
-    Serial.println(F("1. that the SD card is properly inserted"));
-    Serial.println(F("2. that your wiring is good"));
-    Serial.println(F("3. that the variable 'SD.begin ' corresponds to the pin CS of your SD card on the Arduino"));
-    Serial.println(F("And press the RESET button on your Arduino once the problem is solved, to restart the program!"));
-    while (true);
-  }
-  Serial.println(F(" successful!"));
-  Serial.println();
-
-  // ----------------------------------------------------------------------------
-  // Initialisation du DHT22
-  // ----------------------------------------------------------------------------
-  
-
-   
   ////Relay//// 
   pinMode(RELAY_PIN, OUTPUT);  
 
@@ -164,12 +113,15 @@ void setup() {
   
   while (myAHT10.begin() != true)
   {
-    Serial.println(F("AHT10 not connected")); //(F()) save string to flash & keeps dynamic memory free
-      
+    Serial.println(F("AHT10 not connected or fail to load calibration coefficient")); //(F()) save string to flash & keeps dynamic memory free
+    delay(5000);
   }
   Serial.println(F("AHT10 OK"));
 
+ 
+ 
 }
+
 
 // =================
 // Main loop
@@ -183,27 +135,23 @@ void loop() {
   while(LDRvalue< 256){
    
     digitalWrite (Luminar, HIGH);
-    Serial.println ("The lamp will be turned on");
-     
+    Serial.println ("La lampe sera allumé");
+    delay(5000);
     Serial.println (LDRvalue);
   
   }
   while(LDRvalue< 768){
   
     digitalWrite (Luminar, LOW);
-    Serial.println ("The lamp will be turned off");
-     
+    Serial.println ("La lampe sera éteinte");
+    delay(5000);
     Serial.println (LDRvalue);
   }
   // Wait a few milliseconds before updating
   
   
 ////Moisture sensor////
-  
-   
-
-
- int value = analogRead( A0); // read the analog value from sensor
+  int value = analogRead( A0); // read the analog value from sensor
 
   if (value > Dry) {
     Serial.print("The soil is DRY => turn pump ON");
@@ -211,64 +159,30 @@ void loop() {
     Serial.print(" (");
     Serial.print(value);
     Serial.println(")");
-     
+    delay(3000);
   } else if (value < Wet){
     Serial.print("The soil is WET => turn pump OFF");
     digitalWrite(RELAY_PIN, LOW);
     Serial.print(" (");
     Serial.print(value);
     Serial.println(")");
-     
+    delay(3000);
   }
 
-
-
+   ////AHT10////
  
-  // Vérification si données bien reçues
- 
+  Serial.print(F("Temperature: ")); 
+  Serial.print(myAHT10.readTemperature(AHT10_FORCE_READ_DATA)); 
+  Serial.println(F(" +-0.3C"));
+  Serial.print(F("Humidity...: ")); 
+  Serial.print(myAHT10.readHumidity(AHT10_USE_READ_DATA));      
+  Serial.println(F(" +-2%"));
+
  
 
   readStatus = myAHT10.readRawData(); //read 6 bytes from AHT10 over I2C   
-
  
-  int tauxHumidite = myAHT10.readHumidity(AHT10_USE_READ_DATA);        // Reading of the moisture content, expressed in %.
-  int temperature = myAHT10.readTemperature(AHT10_FORCE_READ_DATA);   // Reading of the room temperature, expressed in degrees Celsius
-  if (isnan(tauxHumidite) || isnan(temperature)) {
-    Serial.println(F("No value returned by the AHT10. Is it properly connected?"));
-     
-    return;         // If no value has been received by the Arduino, we wait 2 seconds, then we restart the loop() function
-  }
-
-  // Formatting of this data (one digit after the decimal point)
-  
-  String tauxHumiditeArrondi = String(tauxHumidite,1);     
-  String temperatureArrondie = String(temperature,1);      
-  tauxHumiditeArrondi.replace(".", ",");                   
-  temperatureArrondie.replace(".", ",");             
-        
-  // Display values on the Arduino IDE serial monitor
-  
-  Serial.print("Humidité =  +-2%"); Serial.print(tauxHumiditeArrondi); Serial.print(" % - ");
-  Serial.print("Température = +-0.3"); Serial.print(temperatureArrondie); Serial.println(" °C");
-
-  // Enregistrement de ces données sur la carte SD
-  monFichier = SD.open(nomDuFichier, FILE_WRITE);
-  if (monFichier) {    
-    monFichier.print(tauxHumiditeArrondi);
-    monFichier.print(";");                   
-    monFichier.println(temperatureArrondie);  
-    monFichier.print(";"); 
-    monFichier.println(value);                    
-    monFichier.print(";"); 
-    monFichier.println(LDRvalue);  
-    monFichier.close();                     
-    Serial.println(F("Successful recording to SD card"));
-  }
-  else {
-    Serial.println(F("Error when trying to open the file in writing, on the SD card"));
-  }
-
-  // X seconds delay (2 sec min, so that the sensors have time to make their measurements)
-  Serial.println();
-  delay(delaiIntervalleDeMesures);
+  delay(1000);
+ 
+   
 }
