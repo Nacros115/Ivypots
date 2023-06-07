@@ -22,42 +22,29 @@ PROJECT DESCRIPTION
 Introduction
 
 Ivypots is a solution for people who want to grow indoors vegetables, without worrying about How Often & How Much Watering the Houseplants are.
-
-
  
 
-Ivypots uses the Peltier Effect to generate water from the humidity to finally be able to water the plants. Thanks to the SD Card we can use the results to create a graph in Excel to analyze the plants to determine how much and how often the plants need to be watered to give the best possible experience.
-
+Ivypots uses the Peltier Effect to generate water from the humidity to finally be able to water the plants. Thanks to the SD Card we can use the results to 
+create a graph in Excel to analyze the plants to determine how much and how often the plants need to be watered to give the best possible experience.
  
 
- 
-/////////////////////////////Hardware//////////////////////////// 
- 
-WizFi360-EVB-Pico is based on Raspberry Pi RP2040 and adds Wi-Fi connectivity using WizFi360. It is pin compatible with the Raspberry Pi Pico board and can be used for IoT Solution development. Features, hardware specifications and documents  can be find here: https://docs.wiznet.io/Product/Open-Source-Hardware/wizfi360-evb-pico 
-Getting Started with WizFi360-EVB-Pico – RP2040 and Wi-Fi Development Board  from WIZnet - CIRCUITSTATE Electronics
-WizFi360-EVB-Pico
-Here are the pinouts of the WizFi360-EVB-Pico :
-
-WizFi360-EVB-Pico | WIZnet Document System
-Pinouts  WizFi360-EVB-Pico 
- 
-
- 
- 
- 
  
 
 /////////////////////////////Preparation:////////////////////////////
-To use the WizFi360 Arduino library, the development environment must be configured to use the Arduino platform.
 
+All the schematics can be found on my GitHub page
 Please note that in this guide examples were configured and tested using Arduino IDE in a Windows environment.
-
 Before starting, download and install the Arduino IDE from the link below.
 
-Arduino IDE
-Additionally, if you are using WizFi360-EVB-Pico, minor settings are required in the Arduino IDE.
+    Arduino IDE
 
-WizFi360-EVB-Pico is a development board based on RP2040, and you need to add a package to use the development board based on RP2040.
+Or if you want to use the Cloud :
+
+    Arduino Cloud
+    Blynk cloud  (if you want to use your phone)
+
+Additionally, if you are using the Firebeetle esp32-E, minor settings are required in the Arduino IDE.
+The new ESP32-E  FireBeetle supports WiFi and Bluetooth dual-mode communication, has  ultra low power consumption and even includes an on-board charging  circuit so you can power it with a lipo battery (and charge it over  USB-C).
 
 ① Run the Arduino IDE
 
@@ -66,10 +53,9 @@ WizFi360-EVB-Pico is a development board based on RP2040, and you need to add a 
 You can open it through 'File → Preferences' in the menu bar of Arduino IDE.
 
 ③ Add next link to Additional Boards Manager URL
-
-https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
-
  
+ https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+
 
 Add Boards Manager URLs 
 
@@ -97,18 +83,8 @@ Add Boards Manager URLs
    ![image](https://user-images.githubusercontent.com/78697892/199303381-c169a192-5064-4937-92df-b2894bfc0f36.png)
 
 
-
  
-
-⑦  Connect your device and select the correct port or press the BOOTSELL Button while plugging your cable.
- 
-
-![image](https://user-images.githubusercontent.com/78697892/199303356-44bf60d1-0e51-4038-9b70-fe8863df5edf.png)
-
-
-
- 
-⑧ Finally, transfer the program to the Wizfi360-EVB-Pico.
+⑦ Finally, transfer the program to the Fire beetle ESP32-E.
 
  
 
